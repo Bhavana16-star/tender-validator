@@ -11,9 +11,18 @@ def validate(data: dict):
     proposal_text = data["proposal_text"]
 
     matches = match_requirements(requirements, proposal_text)
-    risks = detect_risks(proposal_text)
+
+    # ✅ Compliance Score
+    matched_count = sum(1 for r in matches if r["status"] == "Matched")
+    total = len(matches)
+
+    compliance_score = (matched_count / total) * 100 if total > 0 else 0
+
+    # ✅ Risk Detection
+    risk_data = detect_risks(proposal_text)
 
     return {
+        "compliance_score": round(compliance_score, 2),
         "matches": matches,
-        "risks": risks
+        "risk_summary": risk_data
     }
